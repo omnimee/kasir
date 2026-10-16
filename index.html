@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="id"><head><base target="_top"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Kasir Cetak</title>
+<html lang="id"><head><base target="_top"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="icon" id="favicon" href="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%3E%3Crect%20width=%2224%22%20height=%2224%22%20rx=%225%22%20fill=%22%230f766e%22/%3E%3Cg%20fill=%22none%22%20stroke=%22%23fff%22%20stroke-width=%221.6%22%20stroke-linecap=%22round%22%3E%3Ccircle%20cx=%2212%22%20cy=%2212%22%20r=%225%22/%3E%3Cpath%20d=%22M12%202.5v6M12%2015.5v6M2.5%2012h6M15.5%2012h6%22/%3E%3C/g%3E%3C/svg%3E">
+<title>Kasir Cetak</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
@@ -586,8 +587,13 @@ function toast(t){var el=$('#toast');el.textContent=t;el.classList.add('on');cle
 
 /* ---------- render: header, tabs ---------- */
 var LOGO_SVG='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5.5"/><path d="M12 1.5v8M12 14.5v8M1.5 12h8M14.5 12h8"/></svg>';
+var FAV0=(document.getElementById('favicon')||{}).href||'';
+function setFavicon(src){var f=document.getElementById('favicon');if(f)f.href=src||FAV0}
+try{var cl=localStorage.getItem('kc:logo');if(cl)setFavicon(cl)}catch(e){}
 function renderHead(){
   $('#hName').textContent=state.shop.name||'Kasir Cetak';
+  setFavicon(state.shop.logo);try{state.shop.logo?localStorage.setItem('kc:logo',state.shop.logo):localStorage.removeItem('kc:logo')}catch(e){}
+  document.title=state.shop.name||'Kasir Cetak';
   var lg=state.shop.logo,hl=$('#hLogo');
   hl.innerHTML=lg?'<img alt="" src="'+lg+'">':LOGO_SVG;
   var pv=$('#shLogoPv');if(pv)pv.innerHTML=lg?'<img alt="Logo" src="'+lg+'">':LOGO_SVG;
