@@ -80,7 +80,7 @@ var APP_URL='';
   $('#change').addEventListener('click',function(){force=true;set(AUTO,null);show();$('#url').focus()});
   $('#form').addEventListener('submit',function(e){
     e.preventDefault();var u=$('#url').value.trim();
-    if(!ok(u)){$('#err').textContent='Alamat harus diawali https://script.google.com/ dan diakhiri /exec';return}
+    if(!ok(u)){$('#err').textContent='https://script.google.com/macros/s/AKfycbxsUCy7dRIsHCf7ycGVljv71L1YSnyYzfsrSspGt_losErBQk0XD4uanRvYgxqw52PswQ/exec';return}
     $('#err').textContent='';set(KEY,u);url=u;force=false;location.href=u;
   });
   show();
