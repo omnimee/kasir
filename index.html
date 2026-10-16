@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0f766e">
+<meta name="robots" content="noindex">
+<title>Kasir Cetak</title>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--ink:#15202b;--mute:#5b6b7a;--line:#d9e0e6;--accent:#0f766e;--c:#00a6d6;--m:#e6007e;--y:#ffd400;--k:#1d1d1b}
+@media(prefers-color-scheme:dark){:root{--bg:#0f151b;--card:#18212a;--ink:#e8eef3;--mute:#93a4b3;--line:#2a3743;--accent:#2dd4bf}}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;padding:16px;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{width:100%;max-width:420px;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.strip{display:flex;height:6px}.strip i{flex:1}.strip i:nth-child(1){background:var(--c)}.strip i:nth-child(2){background:var(--m)}.strip i:nth-child(3){background:var(--y)}.strip i:nth-child(4){background:var(--k)}
+.in{padding:24px 20px}
+.mark{width:56px;height:56px;color:var(--accent);margin-bottom:8px}
+.mark svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
+h1{margin:0 0 4px;font-size:22px}
+p{margin:0 0 16px;color:var(--mute);font-size:14px}
+label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+input[type=url]{width:100%;font:inherit;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.btn{display:block;width:100%;margin-top:12px;padding:14px;border:0;border-radius:10px;background:var(--accent);color:#fff;font:inherit;font-weight:700;text-align:center;text-decoration:none;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);font-weight:600}
+.err{color:#c0392b;font-size:13px;min-height:18px;margin-top:6px}
+.chk{display:flex;gap:8px;align-items:center;margin-top:12px;font-size:14px;font-weight:400}
+.hint{margin-top:16px;font-size:12px;color:var(--mute)}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <div class="strip" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="in">
+    <div class="mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5.5"/><path d="M12 1.5v8M12 14.5v8M1.5 12h8M14.5 12h8"/></svg></div>
+    <h1>Kasir Cetak</h1>
+
+    <section id="open" hidden>
+      <p>Aplikasi kasir percetakan. Ketuk tombol untuk masuk.</p>
+      <a class="btn" id="go" href="#" rel="noopener">Buka Kasir</a>
+      <label class="chk"><input type="checkbox" id="auto"> Langsung buka otomatis lain kali</label>
+      <button class="btn ghost" id="change" type="button">Ubah alamat aplikasi</button>
+    </section>
+
+    <section id="setup" hidden>
+      <p>Satu kali saja: tempel alamat aplikasi (Web App) dari Google Apps Script. Alamat disimpan di perangkat ini.</p>
+      <form id="form" novalidate>
+        <label for="url">Alamat Web App</label>
+        <input id="url" type="url" inputmode="url" autocomplete="off" placeholder="https://script.google.com/macros/s/…/exec">
+        <div class="err" id="err" role="alert"></div>
+        <button class="btn" type="submit">Simpan dan buka</button>
+      </form>
+    </section>
+
+    <p class="hint">Halaman ini hanya pintu masuk. Data dan login ada di aplikasi Google Apps Script milik Anda.</p>
+  </div>
+</main>
+<script>
+/* Isi alamat di bawah agar semua perangkat langsung memakainya (opsional).
+   Kosongkan jika ingin tiap perangkat menempel alamatnya sendiri. */
+var APP_URL='';
+
+(function(){
+  var KEY='kc:appurl',AUTO='kc:auto';
+  function get(k){try{return localStorage.getItem(k)}catch(e){return null}}
+  function set(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}
+  function ok(u){return /^https:\/\/script\.google\.com\/(macros\/s\/[\w-]+\/(exec|dev)|a\/macros\/[\w.-]+\/s\/[\w-]+\/(exec|dev))(\?.*)?$/.test(u)}
+  var $=function(s){return document.querySelector(s)};
+  var force=/[?&]ganti=1/.test(location.search);
+  var url=APP_URL||get(KEY)||'';
+  function show(){
+    var valid=ok(url)&&!force;
+    $('#open').hidden=!valid;$('#setup').hidden=valid;
+    if(valid){
+      $('#go').href=url;$('#auto').checked=get(AUTO)==='1';
+      if($('#auto').checked&&!/[?&]stay=1/.test(location.search))location.replace(url);
+    }else{$('#url').value=ok(url)?url:'';}
+  }
+  $('#auto').addEventListener('change',function(){set(AUTO,this.checked?'1':null)});
+  $('#change').addEventListener('click',function(){force=true;set(AUTO,null);show();$('#url').focus()});
+  $('#form').addEventListener('submit',function(e){
+    e.preventDefault();var u=$('#url').value.trim();
+    if(!ok(u)){$('#err').textContent='Alamat harus diawali https://script.google.com/ dan diakhiri /exec';return}
+    $('#err').textContent='';set(KEY,u);url=u;force=false;location.href=u;
+  });
+  show();
+})();
+</script>
+</body>
+</html>
